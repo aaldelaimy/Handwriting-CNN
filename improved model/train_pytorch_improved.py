@@ -196,7 +196,7 @@ def train(args):
         
         # Print statistics
         print(f"Epoch {epoch+1}/{args.epochs}:")
-        print(f"Train loss: {train_loss:.4f}, Train accuracy: {val_accuracy:.2f}%")
+        print(f"Train loss: {train_loss:.4f}, Train accuracy: {train_accuracy:.2f}%")
         print(f"Val loss: {val_loss:.4f}, Val accuracy: {val_accuracy:.2f}%")
         
         # Step the learning rate scheduler based on validation accuracy
@@ -324,7 +324,8 @@ def visualize_predictions(model, images, labels, device, output_dir, num_samples
     plt.savefig(os.path.join(output_dir, 'predictions.png'))
     plt.close()
 
-def main():
+if __name__ == "__main__":
+    # Parse command line arguments
     parser = argparse.ArgumentParser(description='Train improved CNN for MNIST digit classification')
     
     # Dataset parameters
@@ -356,8 +357,5 @@ def main():
     args = parser.parse_args()
     print(args)
     
-    # Start training
-    train(args)
-
-if __name__ == "__main__":
-    main() 
+    # Start training directly (without calling main)
+    train(args) 

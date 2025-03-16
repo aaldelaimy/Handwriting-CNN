@@ -10,6 +10,47 @@ from tqdm import tqdm
 from model_pytorch_improved import ImprovedCNN
 from train_pytorch_improved import load_mnist_pytorch, evaluate
 
+if __name__ == "__main__":
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description='Test CNN on MNIST or custom images')
+    
+    # Common parameters
+    parser.add_argument('--model_path', type=str, default='output_improved/best_model.pt', 
+                        help='path to the model weights')
+    parser.add_argument('--output_dir', type=str, default='output_improved/test_results', 
+                        help='directory to save results')
+    parser.add_argument('--batch_size', type=int, default=100,
+                        help='batch size for testing')
+    parser.add_argument('--visualize', action='store_true', 
+                        help='visualize predictions')
+    parser.add_argument('--force_cpu', action='store_true', 
+                        help='force using CPU even if GPU is available')
+    
+    # Create subparsers for different test modes
+    subparsers = parser.add_subparsers(dest='mode', help='test mode')
+    
+    # MNIST test set parser
+    mnist_parser = subparsers.add_parser('mnist', help='test on MNIST test set')
+    mnist_parser.add_argument('--num_samples', type=int, default=10, 
+                              help='number of samples to visualize')
+    
+    # Custom image parser
+    image_parser = subparsers.add_parser('image', help='test on a custom image')
+    image_parser.add_argument('--image_path', type=str, required=True, 
+                              help='path to the image file')
+    image_parser.add_argument('--invert', action='store_true', 
+                              help='invert image (for white digits on black background)')
+    
+    args = parser.parse_args()
+    
+    # Run appropriate test mode
+    if args.mode == 'mnist':
+        test_mnist(args)
+    elif args.mode == 'image':
+        test_custom_image(args)
+    else:
+        parser.print_help()
+
 def test_mnist(args):
     """Test the trained model on MNIST test set."""
     # Set device
@@ -279,47 +320,4 @@ def test_custom_image(args):
         plt.savefig(os.path.join(args.output_dir, 'custom_prediction.png'))
         plt.close()
         
-        print(f"Prediction visualization saved to {os.path.join(args.output_dir, 'custom_prediction.png')}")
-
-def main():
-    parser = argparse.ArgumentParser(description='Test CNN on MNIST or custom images')
-    
-    # Common parameters
-    parser.add_argument('--model_path', type=str, default='output_improved/best_model.pt', 
-                        help='path to the model weights')
-    parser.add_argument('--output_dir', type=str, default='output_improved/test_results', 
-                        help='directory to save results')
-    parser.add_argument('--batch_size', type=int, default=100,
-                        help='batch size for testing')
-    parser.add_argument('--visualize', action='store_true', 
-                        help='visualize predictions')
-    parser.add_argument('--force_cpu', action='store_true', 
-                        help='force using CPU even if GPU is available')
-    
-    # Create subparsers for different test modes
-    subparsers = parser.add_subparsers(dest='mode', help='test mode')
-    
-    # MNIST test set parser
-    mnist_parser = subparsers.add_parser('mnist', help='test on MNIST test set')
-    mnist_parser.add_argument('--num_samples', type=int, default=10, 
-                              help='number of samples to visualize')
-    
-    # Custom image parser
-    image_parser = subparsers.add_parser('image', help='test on a custom image')
-    image_parser.add_argument('--image_path', type=str, required=True, 
-                              help='path to the image file')
-    image_parser.add_argument('--invert', action='store_true', 
-                              help='invert image (for white digits on black background)')
-    
-    args = parser.parse_args()
-    
-    # Run appropriate test mode
-    if args.mode == 'mnist':
-        test_mnist(args)
-    elif args.mode == 'image':
-        test_custom_image(args)
-    else:
-        parser.print_help()
-
-if __name__ == "__main__":
-    main() 
+        print(f"Prediction visualization saved to {os.path.join(args.output_dir, 'custom_prediction.png')}") 
